@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "walrus-mind": {
+      "command": "npx",
+      "args": ["ts-node", "--project", "tsconfig.json", "mcp/server.ts"],
+      "env": {
+        "TATUM_API_KEY": "${env:TATUM_API_KEY}",
+        "GROQ_API_KEY": "${env:GROQ_API_KEY}",
+        "WALRUS_PUBLISHER": "${env:WALRUS_PUBLISHER}",
+        "WALRUS_AGGREGATOR": "${env:WALRUS_AGGREGATOR}",
+        "TATUM_SUI_RPC": "${env:TATUM_SUI_RPC}"
+      }
+    }
+  }
+}
