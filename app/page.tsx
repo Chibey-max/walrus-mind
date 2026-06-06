@@ -110,8 +110,17 @@ export default function Home() {
 
       {/* STATUS ROW */}
       <div className="statusrow">
-        <div className="sstat">
-          <div className="slabel">Walrus Blob</div>
+        <div
+          className="sstat"
+          style={{ cursor: blobId ? "pointer" : "default" }}
+          onClick={() => {
+            if (blobId) {
+              navigator.clipboard.writeText(blobId);
+              alert("Blob ID copied!");
+            }
+          }}
+        >
+          <div className="slabel">Walrus Blob (click to copy)</div>
           <div className={`sval ${blobId ? "green" : "dim"}`}>
             <div className={`sdot ${blobId ? "g" : "off"}`} />
             <span>{blobId ? trunc(blobId, 20) : "no blob stored"}</span>
