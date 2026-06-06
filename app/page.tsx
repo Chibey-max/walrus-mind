@@ -20,6 +20,7 @@ export default function Home() {
   const [blobId, setBlobId] = useState<string | null>(null);
   const [checkpoint, setCheckpoint] = useState<string | null>(null);
   const [epoch, setEpoch] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const sessionId = useRef(`sess-${Date.now()}`);
@@ -116,11 +117,14 @@ export default function Home() {
           onClick={() => {
             if (blobId) {
               navigator.clipboard.writeText(blobId);
-              alert("Blob ID copied!");
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
             }
           }}
         >
-          <div className="slabel">Walrus Blob (click to copy)</div>
+          <div className="slabel">
+            {copied ? "✓ COPIED" : "WALRUS BLOB (click to copy)"}
+          </div>
           <div className={`sval ${blobId ? "green" : "dim"}`}>
             <div className={`sdot ${blobId ? "g" : "off"}`} />
             <span>{blobId ? trunc(blobId, 20) : "no blob stored"}</span>
