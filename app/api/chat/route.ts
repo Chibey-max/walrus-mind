@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chat, ChatMessage } from "@/lib/llm";
 import { storeMemory, retrieveMemory, MemoryBlob } from "@/lib/walrus";
-import { getLatestCheckpoint } from "@/lib/tatum";
+import { getLatestCheckpoint, getSuiNetworkStats } from "@/lib/tatum";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -59,15 +59,19 @@ export async function POST(req: NextRequest) {
     };
     const newBlobId = await storeMemory(memBlob);
 
-    // Step 5 — Sui checkpoint via Tatum (non-fatal if it fails)
+    // Step 5 — Sui checkpoint + network stats via Tatum (non-fatal if it fails)
     let checkpoint: string | null = null;
+    let networkStats: Record<string, unknown> | null = null;
     try {
-      checkpoint = await getLatestCheckpoint();
+      [checkpoint, networkStats] = await Promise.all([
+        getLatestCheckpoint(),
+        getSuiNetworkStats(),
+      ]);
     } catch (err) {
-      console.warn("[tatum] checkpoint skipped:", err);
+      console.warn("[tatum] stats skipped:", err);
     }
 
-    return NextResponse.json({ reply, blobId: newBlobId, checkpoint });
+    return NextResponse.json({ reply, blobId: newBlobId, checkpoint, networkStats });
   } catch (err) {
     console.error("[chat] error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";

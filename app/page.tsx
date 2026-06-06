@@ -19,6 +19,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [blobId, setBlobId] = useState<string | null>(null);
   const [checkpoint, setCheckpoint] = useState<string | null>(null);
+  const [epoch, setEpoch] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
   const sessionId = useRef(`sess-${Date.now()}`);
@@ -77,6 +78,9 @@ export default function Home() {
         } else {
           setCheckpoint("unavailable");
         }
+        if (data.networkStats?.epoch) {
+          setEpoch(String(data.networkStats.epoch));
+        }
       } else {
         setMessages([...next, { role: "assistant", content: data.error || "ERR: check api keys" }]);
       }
@@ -128,10 +132,10 @@ export default function Home() {
           </div>
         </div>
         <div className="sstat">
-          <div className="slabel">Network</div>
-          <div className="sval green">
-            <div className="sdot g" />
-            <span>sui mainnet</span>
+          <div className="slabel">Sui Epoch</div>
+          <div className={`sval ${epoch ? "blue" : "dim"}`}>
+            <div className={`sdot ${epoch ? "b" : "off"}`} />
+            <span>{epoch ? `epoch ${epoch}` : "loading"}</span>
           </div>
         </div>
       </div>

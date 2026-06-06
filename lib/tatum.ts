@@ -98,3 +98,16 @@ export async function getSuiObject(objectId: string): Promise<unknown> {
 export async function getChainIdentifier(): Promise<string> {
   return suiRpc<string>("sui_getChainIdentifier", []);
 }
+
+export async function getSuiNetworkStats() {
+  const res = await fetch(
+    "https://api.tatum.io/v3/blockchain/info/SUI",
+    {
+      headers: {
+        "x-api-key": process.env.TATUM_API_KEY!,
+      },
+    }
+  );
+  if (!res.ok) throw new Error(`Tatum Data API ${res.status}`);
+  return res.json();
+}
