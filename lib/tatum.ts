@@ -99,15 +99,27 @@ export async function getChainIdentifier(): Promise<string> {
   return suiRpc<string>("sui_getChainIdentifier", []);
 }
 
-export async function getSuiNetworkStats() {
-  const res = await fetch(
-    "https://api.tatum.io/v3/blockchain/info/SUI",
-    {
-      headers: {
-        "x-api-key": process.env.TATUM_API_KEY!,
+export async function getSuiNetworkStats(): Promise<Record<string, unknown>> {
+  if (!KEY) throw new Error("Missing TATUM_API_KEY env var");
+
+  try {
+    const res = await fetch(
+      "https://api.tatum.io/v4/data/rate/symbol?symbol=SUI&basePair=USD",
+      {
+        headers: {
+          "x-api-key": KEY,
+        },
       },
+    );
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => res.statusText);
+      throw new Error(`Tatum Data API ${res.status}: ${text}`);
     }
-  );
-  if (!res.ok) throw new Error(`Tatum Data API ${res.status}`);
-  return res.json();
+
+    return (await res.json()) as Record<string, unknown>;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown Tatum Data API error";
+    throw new Error(`Tatum SUI/USD Data API failed: ${message}`);
+  }
 }

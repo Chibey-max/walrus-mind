@@ -19,7 +19,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [blobId, setBlobId] = useState<string | null>(null);
   const [checkpoint, setCheckpoint] = useState<string | null>(null);
-  const [epoch, setEpoch] = useState<string | null>(null);
+  const [suiRate, setSuiRate] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -79,8 +79,8 @@ export default function Home() {
         } else {
           setCheckpoint("unavailable");
         }
-        if (data.networkStats?.epoch) {
-          setEpoch(String(data.networkStats.epoch));
+        if (data.networkStats?.value) {
+          setSuiRate(String(data.networkStats.value));
         }
       } else {
         setMessages([...next, { role: "assistant", content: data.error || "ERR: check api keys" }]);
@@ -145,10 +145,10 @@ export default function Home() {
           </div>
         </div>
         <div className="sstat">
-          <div className="slabel">Sui Epoch</div>
-          <div className={`sval ${epoch ? "blue" : "dim"}`}>
-            <div className={`sdot ${epoch ? "b" : "off"}`} />
-            <span>{epoch ? `epoch ${epoch}` : "loading"}</span>
+          <div className="slabel">Sui / USD</div>
+          <div className={`sval ${suiRate ? "blue" : "dim"}`}>
+            <div className={`sdot ${suiRate ? "b" : "off"}`} />
+            <span>{suiRate ? `$${suiRate}` : "loading"}</span>
           </div>
         </div>
       </div>

@@ -59,16 +59,20 @@ export async function POST(req: NextRequest) {
     };
     const newBlobId = await storeMemory(memBlob);
 
-    // Step 5 — Sui checkpoint + network stats via Tatum (non-fatal if it fails)
+    // Step 5 — Sui checkpoint + Data API via Tatum (each non-fatal independently)
     let checkpoint: string | null = null;
     let networkStats: Record<string, unknown> | null = null;
+
     try {
-      [checkpoint, networkStats] = await Promise.all([
-        getLatestCheckpoint(),
-        getSuiNetworkStats(),
-      ]);
+      checkpoint = await getLatestCheckpoint();
     } catch (err) {
-      console.warn("[tatum] stats skipped:", err);
+      console.warn("[tatum] checkpoint skipped:", err);
+    }
+
+    try {
+      networkStats = await getSuiNetworkStats();
+    } catch (err) {
+      console.warn("[tatum] data api skipped:", err);
     }
 
     return NextResponse.json({ reply, blobId: newBlobId, checkpoint, networkStats });
